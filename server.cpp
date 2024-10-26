@@ -139,9 +139,10 @@ void HTTPServer::initialize_mime_types() {
 }
 
 void HTTPServer::initialize_routes() {
-    get_routes["/"] = [this](const std::string&) { return handle_get_request("./templates/index.html"); };
-    get_routes["/gol"] = [this](const std::string&) { return handle_get_request("./templates/game_of_life.html"); };
-    get_routes["/mandelbrot"] = [this](const std::string&) { return handle_get_request("./templates/mandelbrot.html"); };
+    get_routes["/"] = [this](const std::string&) { return handle_get_request("/index.html"); };
+    get_routes["/gol"] = [this](const std::string&) { return handle_get_request("/game_of_life.html"); };
+    get_routes["/mandelbrot"] = [this](const std::string&) { return handle_get_request("/mandelbrot.html"); };
+    get_routes["/cpp_api"] = [this](const std::string&) { return handle_get_request("/test.html"); };
 
     post_routes["/api/echo"] = [](const std::string& body) {
         return "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"echo\": \"" + body + "\"}";
@@ -150,7 +151,7 @@ void HTTPServer::initialize_routes() {
         std::string reversed(body.rbegin(), body.rend());
         return "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"reversed\": \"" + reversed + "\"}";
     };
-}
+} 
 
 std::string HTTPServer::get_mime_type(const std::string& path) {
     size_t dot_pos = path.find_last_of(".");
@@ -164,7 +165,8 @@ std::string HTTPServer::get_mime_type(const std::string& path) {
 }
 
 std::string HTTPServer::get_file_content(const std::string& path) {
-    std::string full_path = "." + path;
+    std::cout << path << std::endl;
+    std::string full_path = "./" + path;
     std::ifstream file(full_path, std::ios::binary);
     if (!file) {
         std::cout << "File not found: " << full_path << std::endl;
@@ -180,7 +182,7 @@ std::string HTTPServer::handle_get_request(const std::string& path) {
 
     std::string file_path = path;
     if (path == "/") {
-        file_path = "./templates/index.html";
+        file_path = "index.html";
     }
 
     auto route = get_routes.find(file_path);
@@ -206,7 +208,6 @@ std::string HTTPServer::handle_get_request(const std::string& path) {
     std::cout << "Serving file: " << file_path << " with MIME type: " << mime_type << std::endl;
     return response.str();
 }
-
 
 std::string HTTPServer::handle_post_request(const std::string& path, const std::string& body) {
     auto route = post_routes.find(path);

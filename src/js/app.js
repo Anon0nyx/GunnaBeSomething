@@ -1,13 +1,13 @@
 window.addEventListener("hashchange", (event) => {
 	switch (window.location.hash) {
 		case "#index":
-			window.location = "./index.html";
+			window.location = "./";
 			break;
 		case "#gol":
-			window.location = "./game_of_life.html";
+			window.location = "./gol";
 			break;
 		case "#mandelbrot":
-			window.location = "./mandelbrot.html";
+			window.location = "./mandelbrot";
 			break;
 		default:
 			console.log("Page Not Found");
