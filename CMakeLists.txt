@@ -14,3 +14,6 @@ add_executable(MyProject main.cpp server.cpp)
 if(WIN32)
     target_link_libraries(MyProject PRIVATE ws2_32)
 endif()
+
+# Set working directory for Visual Studio
+set_property(TARGET MyProject PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

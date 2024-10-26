@@ -4,6 +4,7 @@
 #include "server.h"
 
 int main(int argc, char* argv[]) {
+    std::cout << argv[0] << std::endl;
     int port = 8080;  // Default port
 
     if (argc > 1) {

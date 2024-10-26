@@ -166,7 +166,7 @@ std::string HTTPServer::get_mime_type(const std::string& path) {
 
 std::string HTTPServer::get_file_content(const std::string& path) {
     std::cout << path << std::endl;
-    std::string full_path = "./" + path;
+    std::string full_path = "../../../" + path;
     std::ifstream file(full_path, std::ios::binary);
     if (!file) {
         std::cout << "File not found: " << full_path << std::endl;
