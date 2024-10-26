@@ -1,0 +1,21 @@
+body {
+  background-color: rgb(60,63,77);
+}
+
+h1 {
+  color: white;
+}
+
+canvas {
+  border: 2px solid black;
+  background: rgb(2,0,36);
+  background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(3,3,80,1) 50%, rgba(40,3,50,1) 100%);
+  }
+
+input, textarea, button {
+  text-align: center;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+}

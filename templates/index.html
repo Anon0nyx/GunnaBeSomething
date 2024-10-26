@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="./src/style/index.css">
+  <link rel="stylesheet" href="./src/style/style.css">
+  <script src="./src/js/app.js"></script>
+</head>
+<body>
+	<nav class="navbar">
+		<div class="logo"></div>
+		<div class="nav-links">
+			<a href="#index" class="nav-link">Home</a>
+			<a href="#gol" class="nav-link">GOL</a>
+			<a href="#mandelbrot" class="nav-link">Mandelbrot Set</a>
+		</div>
+	</nav>
+  <header class="hero">
+    <h1>Welcome to The Code Vault</h1>
+    <p>Explore our projects</p>
+  </header>
+  <section id="about">
+    <h2>Purpose</h2>
+    <p>The purpose of this website is to act as a vault for a multitude of different coding projects</p>
+  </section>
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="project-grid">
+      <div class="project-card">
+        <h3><a href="#gol">Game of Life</a></h3>
+        <p>A version of Conway's Game of Life. New addition is having the ability to change the seed pattern before running the simulation</p>
+      </div>
+      <div class="project-card">
+        <h3>Manderlbrot Set Visualizer</h3>
+        <p>A simple HTML/CSS/JS page with a visualizer for the Mandelbrot set for 300 iterations</p>
+      </div>
+      <!-- Add more project cards as needed -->
+    </div>
+  </section>
+  <section id="contact">
+    <h2>Contact</h2>
+    <form id="contactForm">
+      <input type="text" id="name" placeholder="Your Name" required>
+      <input type="email" id="email" placeholder="Your Email" required>
+      <textarea id="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+  <script src="./src/js/index.js"></script>
+</body>
+</html>

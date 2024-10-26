@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html id="home" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="./src/js/app.js"></script>
+<script src="./src/js/gol/game_of_life.js"></script>
+<link rel="stylesheet" href="./src/style/game_of_life.css">
+<link rel="stylesheet" href="./src/style/style.css">
+<script src="./src/js/gol/initialize_board.js"></script>
+<title>Conway's Game of Life</title>
+</head>
+<body onload="prepareGameOfLife()">
+	<nav class="navbar">
+		<div class="logo"></div>
+		<div class="nav-links">
+			<a href="#index" class="nav-link">Home</a>
+			<a href="#gol" class="nav-link">GOL</a>
+			<a href="#mandelbrot" class="nav-link">Mandelbrot Set</a>
+		</div>
+	</nav>
+	<canvas id="gameOfLifeWorld" width="1390" height="1080">
+  		Error Occurring
+	</canvas>
+	<input type="button" onclick="startGameOfLife()" value="Begin" />
+	<input type="button" onclick="foobar()" value="Seed Board" />
+	<input type="button" onclick="location.reload()" value="Clear Board" />
+	<p>Currently in generation <span id="generation">0</span></p>
+</body>
+</html>
