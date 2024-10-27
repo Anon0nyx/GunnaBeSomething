@@ -1,7 +1,7 @@
-# MyProject
+# C++ Efficient Web Server
 
 ## Overview
-MyProject is a versatile and modular web application, initially focused on building a robust C++ web server. This project aims to offer a clean, efficient, and flexible foundation for developing various web-based solutions.
+This project is a versatile and modular web application, initially focused on building a robust C++ web server. This project aims to offer a clean, efficient, and flexible foundation for developing various web-based solutions.
 
 ## Features
 - Procedural C++ web server
@@ -13,5 +13,5 @@ MyProject is a versatile and modular web application, initially focused on build
 ## Installation
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/yourusername/myproject.git
-   cd myproject
+   git clone https://github.com/Anon0nyx/GunnaBeSomething.git
+2. cd GunnaBeSomething
