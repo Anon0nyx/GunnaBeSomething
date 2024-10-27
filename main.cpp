@@ -4,6 +4,7 @@
 #include "server.h"
 
 SOCKET server_fd;
+int port = 6969;
 
 unsigned __stdcall client_thread(void* args) {
     SOCKET client_socket = (SOCKET)((void**)args)[0];
@@ -14,9 +15,6 @@ unsigned __stdcall client_thread(void* args) {
 }
 
 int main(int argc, char* argv[]) {
-    std::cout << argv[0] << std::endl;
-    int port = 6969;
-    
     // See if we got a port from our user, set it if not
     if (argc > 1) {
         try {
