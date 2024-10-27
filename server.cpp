@@ -78,6 +78,7 @@ void initialize_routes() {
    
     // Define the two sets of POST routes that we have so far
     post_routes["/api/echo"] = [](const std::string& body) {
+        std::cout << body << std::endl;
         return "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"echo\": \"" + body + "\"}";
     };
     
