@@ -7,13 +7,28 @@
 #include <ctime>
 #include <iomanip>
 
-#include "server.h"
+#include <string>
+#include <unordered_map>
+#include <functional>
+#include <Windows.h>
+
+#pragma comment(lib, "Ws2_32.lib")
 
 std::unordered_map<std::string, std::string> mime_types;
 std::unordered_map<std::string, std::function<std::string(const std::string&)>> get_routes;
 std::unordered_map<std::string, std::function<std::string(const std::string&)>> post_routes;
 
-#pragma comment(lib, "Ws2_32.lib")
+void initialize_mime_types();
+void initialize_routes();
+void handle_client(SOCKET client_sock);
+std::string get_mime_type(const std::string& path);
+std::string get_file_content(const std::string& path);
+std::string handle_get_request(const std::string& path);
+std::string handle_post_request(const std::string& path, const std::string& body);
+std::string get_current_time();
+
+SOCKET server_fd;
+int port;
 
 void handle_client(SOCKET client_socket) {
     char buffer[4096]; // Set our buffer for receiving messages
@@ -100,6 +115,7 @@ std::string get_mime_type(const std::string& path) {
 }
 
 std::string get_file_content(const std::string& path) {
+    std::cout << path << std::endl;
     std::string full_path = "../../../templates/" + path;
     std::ifstream file(full_path, std::ios::binary);
     if (!file) {
@@ -157,4 +173,85 @@ std::string get_current_time() {
     char buf[80];
     strftime(buf, sizeof(buf), "%Y-%m-%d %X", tstruct);
     return buf;
+}
+
+int main(int argc, char* argv[]) {
+    std::cout << argv[0] << std::endl;
+    int port = 6969;
+    
+    // See if we got a port from our user, set it if not
+    if (argc > 1) {
+        try {
+            port = std::stoi(argv[1]);
+            if (port < 1 || port > 65535) {
+                throw std::out_of_range("Port number out of range");
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Invalid port number. Using default port 6969" << std::endl;
+            port = 6969;
+        }
+    }
+
+    try {
+        // Initial configuration steps 
+        initialize_mime_types();
+        initialize_routes();
+
+        // Now to actually build the server itself
+        WSADATA wsaData;
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+            std::cerr << "WSAStartup failed with error: " << WSAGetLastError() << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // Setup our socket
+        server_fd = socket(AF_INET, SOCK_STREAM, 0); // Setup our socket
+        if (server_fd == INVALID_SOCKET) {
+            std::cerr << "socket failed with error: " << WSAGetLastError() << std::endl;
+            WSACleanup();
+            exit(EXIT_FAILURE);
+        }
+
+        // Define some variables for the server
+		sockaddr_in address;
+		address.sin_family = AF_INET;
+		address.sin_addr.s_addr = INADDR_ANY;
+		address.sin_port = htons(port);
+
+		// Bing our socket to our port
+		if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) == SOCKET_ERROR) {
+			std::cerr << "bind failed with error: " << WSAGetLastError() << std::endl;
+			std::cerr << "Make sure the port " << port << " is not already in use." << std::endl;
+			closesocket(server_fd);
+			WSACleanup();
+			exit(EXIT_FAILURE);
+		}
+
+		// Ensure that the server is able to listen without error
+		if (listen(server_fd, 10) == SOCKET_ERROR) {
+			std::cerr << "listen failed with error: " << WSAGetLastError() << std::endl;
+			closesocket(server_fd);
+			WSACleanup();
+			exit(EXIT_FAILURE);
+		}
+
+		std::cout << "Server listening on port " << port << std::endl;
+		   
+		// This is where the server actually starts listening, everything before this is just
+		// A check to make sure that the initialization worked properly
+		while (true) {
+            std::cout << "Server has made it here" << std::endl;
+			SOCKET client_socket = accept(server_fd, nullptr, nullptr);
+			if (client_socket == INVALID_SOCKET) {
+				std::cerr << "accept failed with error: " << WSAGetLastError() << std::endl;
+				closesocket(server_fd);
+				WSACleanup();
+				exit(EXIT_FAILURE);
+			}
+            std::cout << "Client socket received" << std::endl;
+		    handle_client(client_socket);
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 }
