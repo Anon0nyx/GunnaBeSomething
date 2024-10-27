@@ -12,8 +12,8 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 HTTPServer::HTTPServer(int port) : port(port) {
-    initialize_mime_types();
-    initialize_routes();
+    initialize_mime_types(); // Create a dictionary with our different MIME types
+    initialize_routes(); // Initialize the available routes for the server
 }
 
 unsigned __stdcall client_thread(void* arg) {
@@ -32,18 +32,20 @@ void HTTPServer::start() {
         exit(EXIT_FAILURE);
     }
 
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    server_fd = socket(AF_INET, SOCK_STREAM, 0); // Setup our socket
     if (server_fd == INVALID_SOCKET) {
         std::cerr << "socket failed with error: " << WSAGetLastError() << std::endl;
         WSACleanup();
         exit(EXIT_FAILURE);
     }
 
+    // Define some variables for the server
     sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
 
+    // Bing our socket to our port
     if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) == SOCKET_ERROR) {
         std::cerr << "bind failed with error: " << WSAGetLastError() << std::endl;
         std::cerr << "Make sure the port " << port << " is not already in use." << std::endl;
@@ -52,6 +54,7 @@ void HTTPServer::start() {
         exit(EXIT_FAILURE);
     }
 
+    // Ensure that the server is able to listen without error
     if (listen(server_fd, 10) == SOCKET_ERROR) {
         std::cerr << "listen failed with error: " << WSAGetLastError() << std::endl;
         closesocket(server_fd);
@@ -60,7 +63,9 @@ void HTTPServer::start() {
     }
 
     std::cout << "Server listening on port " << port << std::endl;
-
+       
+    // This is where the server actually starts listening, everything before this is just
+    // A check to make sure that the initialization worked properly
     while (true) {
         SOCKET client_socket = accept(server_fd, nullptr, nullptr);
         if (client_socket == INVALID_SOCKET) {
@@ -73,8 +78,8 @@ void HTTPServer::start() {
         void** args = new void*[2];
         args[0] = this;
         args[1] = (void*)client_socket;
-
-        uintptr_t thread = _beginthreadex(NULL, 0, client_thread, args, 0, NULL);
+        uintptr_t thread = _beginthreadex(NULL, 0, client_thread, args, 0, NULL); // Once weve got a connection
+            // Create a new threat to handle this connection through the client_thread() method
         if (thread == 0) {
             std::cerr << "Failed to create thread with error: " << GetLastError() << std::endl;
             delete[] args;
@@ -82,11 +87,12 @@ void HTTPServer::start() {
         } else {
             CloseHandle((HANDLE)thread);
         }
+        // This is where our server stops listening
     }
 }
 
 void HTTPServer::handle_client(SOCKET client_socket) {
-    char buffer[4096];
+    char buffer[4096]; // Set our buffer for receiving messages
     int read_bytes = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
     if (read_bytes < 0) {
         std::cerr << "recv failed" << std::endl;
@@ -97,7 +103,7 @@ void HTTPServer::handle_client(SOCKET client_socket) {
 
     std::istringstream request_stream(buffer);
     std::string method, path, version;
-    request_stream >> method >> path >> version;
+    request_stream >> method >> path >> version; // put request parts into individual variables
 
     sockaddr_in client_addr;
     int addrlen = sizeof(client_addr);
@@ -138,21 +144,26 @@ void HTTPServer::initialize_mime_types() {
     mime_types[".txt"] = "text/plain";
 }
 
+// As we can see, we are storing the available routes and their pages in a string object
 void HTTPServer::initialize_routes() {
+    // Pretty simple map structure that stores each of the existing routes for the web pages
     get_routes["/"] = [this](const std::string&) { return handle_get_request("/index.html"); };
     get_routes["/gol"] = [this](const std::string&) { return handle_get_request("/game_of_life.html"); };
     get_routes["/mandelbrot"] = [this](const std::string&) { return handle_get_request("/mandelbrot.html"); };
     get_routes["/cpp_api"] = [this](const std::string&) { return handle_get_request("/test.html"); };
-
+   
+    // Define the two sets of POST routes that we have so far
     post_routes["/api/echo"] = [](const std::string& body) {
         return "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"echo\": \"" + body + "\"}";
     };
+    
     post_routes["/api/reverse"] = [](const std::string& body) {
         std::string reversed(body.rbegin(), body.rend());
         return "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"reversed\": \"" + reversed + "\"}";
     };
 } 
 
+// Determining the MIME type of an outgoing file
 std::string HTTPServer::get_mime_type(const std::string& path) {
     size_t dot_pos = path.find_last_of(".");
     if (dot_pos != std::string::npos) {
