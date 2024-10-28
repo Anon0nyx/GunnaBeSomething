@@ -75,7 +75,8 @@ void initialize_routes() {
     get_routes["/gol"] = [](const std::string&) { return handle_get_request("/game_of_life.html"); };
     get_routes["/mandelbrot"] = [](const std::string&) { return handle_get_request("/mandelbrot.html"); };
     get_routes["/cpp_api"] = [](const std::string&) { return handle_get_request("/test.html"); };
-   
+    get_routes["/game"] = [](const std::string&) { return handle_get_request("/sideViewGameTest.html"); };
+ 
     // Define the two sets of POST routes that we have so far
     post_routes["/api/echo"] = [](const std::string& body) {
         std::cout << body << std::endl;
