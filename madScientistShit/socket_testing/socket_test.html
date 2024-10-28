@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple HTTP Test</title>
+</head>
+<body>
+    <script>
+        fetch("http://localhost:9001")
+            .then(response => response.text())
+            .then(data => console.log("HTTP Response:", data))
+            .catch(error => console.log("HTTP Error:", error));
+    </script>
+</body>
+</html>
+

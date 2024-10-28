@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple 2D Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+        const tileSize = 5;
+        const rows = canvas.height / tileSize;
+        const cols = canvas.width / tileSize;
+
+        let keys = {};
+        let player = { x: 5, y: 20 };
+
+        function connectWebSocket() {
+            const ws = new WebSocket("ws://localhost:9001");
+
+            ws.onopen = function(event) {
+                console.log("WebSocket connection opened.", event);
+                ws.send("initial_connection"); // Send an initial message if needed
+            };
+
+            ws.onmessage = function(event) {
+                console.log("Message received from server: ", event.data);
+                const data = event.data.split(",");
+                player.x = parseFloat(data[0]);
+                player.y = parseFloat(data[1]);
+                drawGame();
+            };
+
+            ws.onclose = function(event) {
+                console.log("WebSocket connection closed: ", event);
+                setTimeout(connectWebSocket, 1000); // Attempt to reconnect every second
+            };
+
+            ws.onerror = function(event) {
+                console.log("WebSocket error: ", event);
+            };
+
+            document.addEventListener('keydown', (e) => {
+                keys[e.code] = true;
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(e.code[0].toLowerCase()); // Simplified input handling
+                }
+            });
+            document.addEventListener('keyup', (e) => {
+                keys[e.code] = false;
+            });
+        }
+
+        function drawSky() {
+            const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+            gradient.addColorStop(0.5, 'rgba(51, 51, 51, 1)');
+            gradient.addColorStop(1, 'rgba(51, 51, 51, 0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawGrid() {
+            // Draw the grid based on the server state if needed
+        }
+
+        function drawPlayer() {
+            context.fillStyle = '#B0B0B0';
+            context.fillRect(player.x * tileSize, player.y * tileSize, tileSize, tileSize * 3);
+        }
+
+        function drawGame() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            drawSky();
+            drawGrid();
+            drawPlayer();
+        }
+
+        function update() {
+            requestAnimationFrame(update);
+        }
+
+        connectWebSocket();
+        update();
+    </script>
+</body>
+</html>
+

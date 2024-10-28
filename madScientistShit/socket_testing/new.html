@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple WebSocket Echo Client</title>
+</head>
+<body>
+    <script>
+        const ws = new WebSocket("ws://localhost:9001");
+
+        ws.onopen = function(event) {
+            console.log("WebSocket connection opened.");
+            ws.send("Hello Server!");
+        };
+
+        ws.onmessage = function(event) {
+            console.log("Message received from server: ", event.data);
+        };
+
+        ws.onclose = function(event) {
+            console.log("WebSocket connection closed.");
+        };
+
+        ws.onerror = function(event) {
+            console.error("WebSocket error: ", event);
+        };
+    </script>
+</body>
+</html>
+
